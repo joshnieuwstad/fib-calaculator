@@ -1,0 +1,1 @@
+INSERT INTO seen_indices(fib_index) VALUES ('3')
