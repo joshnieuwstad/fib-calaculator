@@ -1,0 +1,68 @@
+services:
+  api:
+    build: fib-api
+    ports:
+      - 8080:8080
+    environment:
+      - POSTGRES_DB=example
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - spring-postgres
+      - spring-redis
+    expose:
+      - 8080
+  db:
+    image: postgres
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - spring-postgres
+    environment:
+      - POSTGRES_DB=example
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - spring-redis
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./fib-worker
+    volumes:
+      - /app/node_modules
+      - ./fib-worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - spring-redis
+  # client:
+  #   build:
+  #     dockerfile: Dockerfile.dev
+  #     context: ./frontend
+  #   volumes:
+  #     - /app/node_modules
+  #     - ./frontend:/app
+  #   ports:
+  #     - 3000:3000
+  # nginx:
+  #   build:
+  #     dockerfile: Dockerfile.dev
+  #     context: ./nginx
+  #   restart: always
+  #   ports:
+  #     - 3050:80
+volumes:
+  db-data:
+secrets:
+  db-password:
+    file: db/password.txt
+networks:
+  spring-postgres:
+  spring-redis:
