@@ -10,8 +10,7 @@ services:
     networks:
       - spring-postgres
       - spring-redis
-    expose:
-      - 8080
+      - spring-nginx-client
   db:
     image: postgres
     restart: always
@@ -42,22 +41,29 @@ services:
       - REDIS_PORT=6379
     networks:
       - spring-redis
-  # client:
-  #   build:
-  #     dockerfile: Dockerfile.dev
-  #     context: ./frontend
-  #   volumes:
-  #     - /app/node_modules
-  #     - ./frontend:/app
-  #   ports:
-  #     - 3000:3000
-  # nginx:
-  #   build:
-  #     dockerfile: Dockerfile.dev
-  #     context: ./nginx
-  #   restart: always
-  #   ports:
-  #     - 3050:80
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./fib-client
+    volumes:
+      - /app/node_modules
+      - ./fib-client:/app
+    ports:
+      - 3000:3000
+    networks:
+      - spring-nginx-client
+  nginx:
+    depends_on:
+      - api
+      - client
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    restart: always
+    ports:
+      - 3050:80
+    networks:
+      - spring-nginx-client
 volumes:
   db-data:
 secrets:
@@ -66,3 +72,4 @@ secrets:
 networks:
   spring-postgres:
   spring-redis:
+  spring-nginx-client:

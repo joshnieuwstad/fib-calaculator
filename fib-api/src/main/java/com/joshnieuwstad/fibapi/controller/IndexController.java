@@ -20,7 +20,6 @@ import com.joshnieuwstad.fibapi.services.RedisValueSubscriber;
 
 
 @RestController
-@RequestMapping("api/")
 public class IndexController {
     Logger logger = LoggerFactory.getLogger(IndexController.class);
 
