@@ -42,14 +42,14 @@ services:
     networks:
       - spring-redis
   client:
+    environment:
+      - WDS_SOCKET_PORT=0
     build:
       dockerfile: Dockerfile.dev
       context: ./fib-client
     volumes:
       - /app/node_modules
       - ./fib-client:/app
-    ports:
-      - 3000:3000
     networks:
       - spring-nginx-client
   nginx:
