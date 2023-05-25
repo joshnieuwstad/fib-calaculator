@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 export default function Fibonacci() {
   const [seenIndices, setIndices] = useState([]);
   const [values, setValues] = useState([]);
-  const [currentIndex, setIndex] = useState();
+  const [currentIndex, setIndex] = useState("");
 
   useEffect(() => {
     fetchIndices();
@@ -12,13 +12,13 @@ export default function Fibonacci() {
   }, []);
 
   const fetchValues = async () => {
-    const seenValues = await axios.get("api/values/current");
-    setValues(seenValues);
+    const { data } = await axios.get("api/values/current");
+    setValues(data);
   };
 
   const fetchIndices = async () => {
-    const seenIndices = await axios.get("api/values/all");
-    setIndices(seenIndices);
+    const { data } = await axios.get("api/values/all");
+    setIndices(data);
   };
 
   const handleSubmit = async (event) => {
@@ -29,7 +29,7 @@ export default function Fibonacci() {
     });
 
     setIndices((indices) => [...indices, currentIndex]);
-    setIndex(null);
+    setIndex("");
   };
 
   return (
